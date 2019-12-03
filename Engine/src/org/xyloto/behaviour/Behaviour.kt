@@ -18,13 +18,13 @@ open class Behaviour : Attribute() {
 		behaviourSystem = Engine.requireSystem()
 	}
 
-	override fun onAttached() {
-		super.onAttached()
+	override fun onAttach() {
+		super.onAttach()
 		behaviourSystem.addBehaviour(this)
 	}
 
-	override fun onDetached() {
-		super.onDetached()
+	override fun onDetach() {
+		super.onDetach()
 		behaviourSystem.removeBehaviour(this)
 	}
 

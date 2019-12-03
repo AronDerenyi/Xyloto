@@ -42,8 +42,8 @@ open class Attribute {
 	internal fun notifyAttach() {
 		notifyingAttach = true
 
-		onAttached()
-		check(notifiedAttach) { "${this::class.qualifiedName} did not call through to super.onAttached()" }
+		onAttach()
+		check(notifiedAttach) { "${this::class.qualifiedName} did not call through to super.onAttach()" }
 		notifiedAttach = false
 
 		notifyingAttach = false
@@ -52,8 +52,8 @@ open class Attribute {
 	internal fun notifyDetach() {
 		notifyingDetach = true
 
-		onDetached()
-		check(notifiedDetach) { "${this::class.qualifiedName} did not call through to super.onDetached()" }
+		onDetach()
+		check(notifiedDetach) { "${this::class.qualifiedName} did not call through to super.onDetach()" }
 		notifiedDetach = false
 
 		notifyingDetach = false
@@ -65,15 +65,15 @@ open class Attribute {
 		notifiedReady = true
 	}
 
-	protected open fun onAttached() {
-		check(notifyingAttach) { "onAttached() can be only called by the engine" }
-		check(!notifiedAttach) { "${this::class.qualifiedName} called through to super.onAttached() multiple times" }
+	protected open fun onAttach() {
+		check(notifyingAttach) { "onAttach() can be only called by the engine" }
+		check(!notifiedAttach) { "${this::class.qualifiedName} called through to super.onAttach() multiple times" }
 		notifiedAttach = true
 	}
 
-	protected open fun onDetached() {
-		check(notifyingDetach) { "onDetached() can be only called by the engine" }
-		check(!notifiedDetach) { "${this::class.qualifiedName} called through to super.onDetached() multiple times" }
+	protected open fun onDetach() {
+		check(notifyingDetach) { "onDetach() can be only called by the engine" }
+		check(!notifiedDetach) { "${this::class.qualifiedName} called through to super.onDetach() multiple times" }
 		notifyingDetach = true
 	}
 }
