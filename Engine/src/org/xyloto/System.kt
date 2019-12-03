@@ -57,6 +57,6 @@ open class System {
 	protected open fun onUpdate() {
 		check(callingUpdate) { "onUpdate() can be only called by the engine" }
 		check(!calledUpdate) { "${this::class.qualifiedName} called through to super.onUpdate() multiple times" }
-		callingUpdate = true
+		calledUpdate = true
 	}
 }
