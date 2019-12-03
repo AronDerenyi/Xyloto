@@ -3,6 +3,8 @@ package org.xyloto
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class Attribute {
 
+	private val className = this::class.qualifiedName
+
 	private var notifyingLink: Boolean = false
 	private var notifiedLink: Boolean = false
 
@@ -29,7 +31,7 @@ open class Attribute {
 		notifyingLink = true
 
 		onLinked()
-		check(notifiedLink) { "super.onLinked() was not called" }
+		check(notifiedLink) { "$className did not call through to super.onLinked()" }
 		notifiedLink = false
 
 		notifyingLink = false
@@ -38,8 +40,8 @@ open class Attribute {
 	internal fun notifyAttach() {
 		notifyingAttach = true
 
-		onLinked()
-		check(notifiedAttach) { "super.onAttached() was not called" }
+		onAttached()
+		check(notifiedAttach) { "$className did not call through to super.onAttached()" }
 		notifiedAttach = false
 
 		notifyingAttach = false
@@ -48,8 +50,8 @@ open class Attribute {
 	internal fun notifyDetach() {
 		notifyingDetach = true
 
-		onLinked()
-		check(notifiedDetach) { "super.onLDetached() was not called" }
+		onDetached()
+		check(notifiedDetach) { "$className did not call through to super.onDetached()" }
 		notifiedDetach = false
 
 		notifyingDetach = false
@@ -57,19 +59,19 @@ open class Attribute {
 
 	open fun onLinked() {
 		check(notifyingLink) { "onLinked() can be only called by the engine" }
-		check(!notifiedLink) { "super.onLinked() can only be called once" }
+		check(!notifiedLink) { "$className called through to super.onLinked() multiple times" }
 		notifiedLink = true
 	}
 
 	open fun onAttached() {
 		check(notifyingAttach) { "onAttached() can be only called by the engine" }
-		check(!notifiedAttach) { "super.onAttached() can only be called once" }
+		check(!notifiedAttach) { "$className called through to super.onAttached() multiple times" }
 		notifiedAttach = true
 	}
 
 	open fun onDetached() {
 		check(notifyingDetach) { "onDetached() can be only called by the engine" }
-		check(!notifiedDetach) { "super.onDetached() can only be called once" }
+		check(!notifiedDetach) { "$className called through to super.onDetached() multiple times" }
 		notifyingDetach = true
 	}
 }
