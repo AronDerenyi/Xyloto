@@ -29,9 +29,9 @@ object Engine {
 		started = true
 		running = true
 
-		systems.forEach(System::onStart)
-		while (running) systems.forEach(System::onUpdate)
-		systems.forEach(System::onStop)
+		systems.forEach(System::notifyStart)
+		while (running) systems.forEach(System::update)
+		systems.forEach(System::notifyStop)
 
 		started = false
 	}
