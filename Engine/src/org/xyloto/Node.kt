@@ -47,7 +47,7 @@ class Node(vararg attributes: Attribute) {
 
 	init {
 		attributes.forEach { it.link(this) }
-		attributes.forEach(Attribute::notifyLink)
+		attributes.forEach(Attribute::notifyReady)
 	}
 
 	fun add(node: Node) {
