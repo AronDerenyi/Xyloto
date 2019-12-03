@@ -71,7 +71,7 @@ class Node(vararg attributes: Attribute) {
 		Engine.unlockNodeTree()
 	}
 
-	@JvmName("getAttributeByType")
+	@JvmName("getAttributeInlined")
 	inline fun <reified T : Attribute> getAttribute(): T? {
 		for (attribute in attributes) {
 			if (attribute is T) return attribute
@@ -80,7 +80,12 @@ class Node(vararg attributes: Attribute) {
 		return null
 	}
 
-	@JvmName("getAttributesByType")
+	@JvmName("requireAttributeInlined")
+	inline fun <reified T : Attribute> requireAttribute(): T {
+		return getAttribute() ?: throw Exception("${T::class.qualifiedName} is missing")
+	}
+
+	@JvmName("getAttributesInlined")
 	inline fun <reified T : Attribute> getAttributes(): List<T> {
 		val attributes: MutableList<T> = LinkedList()
 
@@ -93,6 +98,10 @@ class Node(vararg attributes: Attribute) {
 
 	fun <T : Attribute> getAttribute(type: Class<T>): T? {
 		return getAttribute(type)
+	}
+
+	fun <T : Attribute> requireAttribute(type: Class<T>): T {
+		return requireAttribute(type)
 	}
 
 	fun <T : Attribute> getAttributes(type: Class<T>): List<T> {

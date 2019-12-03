@@ -65,4 +65,26 @@ object Engine {
 
 		unlockNodeTree()
 	}
+
+	@JvmName("getSystemInlined")
+	inline fun <reified T : System> getSystem(): T? {
+		for (system in systems) {
+			if (system is T) return system
+		}
+
+		return null
+	}
+
+	@JvmName("requireSystemInlined")
+	inline fun <reified T : System> requireSystem(): T {
+		return getSystem() ?: throw Exception("${T::class.qualifiedName} is missing")
+	}
+
+	fun <T : Attribute> getSystem(type: Class<T>): T? {
+		return getSystem(type)
+	}
+
+	fun <T : Attribute> requireSystem(type: Class<T>): T {
+		return requireSystem(type)
+	}
 }
