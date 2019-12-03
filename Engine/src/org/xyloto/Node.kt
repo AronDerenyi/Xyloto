@@ -36,7 +36,7 @@ class Node(vararg attributes: Attribute) {
 			propagate()
 
 			fun Node.notify() {
-				attributes.forEach(if (attached) Attribute::onAttached else Attribute::onDetached)
+				attributes.forEach(if (attached) Attribute::notifyAttach else Attribute::notifyDetach)
 				children.forEach(Node::notify)
 			}
 			notify()
@@ -47,7 +47,7 @@ class Node(vararg attributes: Attribute) {
 
 	init {
 		attributes.forEach { it.link(this) }
-		attributes.forEach { it.onLinked() }
+		attributes.forEach(Attribute::notifyLink)
 	}
 
 	fun add(node: Node) {
