@@ -1,0 +1,14 @@
+# IntelliJ
+.idea/
+*.iml
+
+# Output
+out/
+
+# Libraries
+lib/
+
+# MacOS
+.Trashes
+.DS_Store
+.Spotlight-V100
