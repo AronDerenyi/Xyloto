@@ -20,6 +20,10 @@ open class Attribute {
 	val linked: Boolean
 		get() = nodeInternal != null
 
+	init {
+		Engine.checkInitialized()
+	}
+
 	internal fun link(node: Node) {
 		check(!linked) { "The attribute has already been linked" }
 		nodeInternal = node

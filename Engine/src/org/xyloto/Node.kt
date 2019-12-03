@@ -46,6 +46,7 @@ class Node(vararg attributes: Attribute) {
 	val children: List<Node> = Collections.unmodifiableList(mutableChildren)
 
 	init {
+		Engine.checkInitialized()
 		attributes.forEach { it.link(this) }
 		attributes.forEach(Attribute::notifyReady)
 	}

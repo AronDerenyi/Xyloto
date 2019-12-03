@@ -5,8 +5,11 @@ import java.util.*
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object Engine {
 
+	private var initialized: Boolean = false
 	private var started: Boolean = false
 	private var running: Boolean = false
+
+	private var nodeTreeLocked: Boolean = false
 
 	private val mutableSystems: MutableList<System> = LinkedList()
 	val systems: List<System> = Collections.unmodifiableList(mutableSystems)
@@ -14,25 +17,32 @@ object Engine {
 	private val mutableRoots: MutableList<Node> = LinkedList()
 	val roots: List<Node> = Collections.unmodifiableList(mutableRoots)
 
-	internal var nodeTreeLocked: Boolean = false
-		private set
+	fun init(vararg systems: System) {
+		check(!initialized) { "The engine has already been initialized" }
+		mutableSystems.addAll(systems)
+		initialized = true
+	}
 
-	fun start(vararg systems: System) {
-		if (started) throw IllegalStateException("The engine has already been started")
+	fun start() {
+		checkInitialized()
+		check(!started) { "The engine has already been started" }
 		started = true
 		running = true
-		mutableSystems.addAll(systems)
 
 		systems.forEach(System::onStart)
 		while (running) systems.forEach(System::onUpdate)
 		systems.forEach(System::onStop)
 
-		mutableSystems.clear()
 		started = false
 	}
 
 	fun stop() {
+		check(started) { "The engine hasn't been started" }
 		running = false
+	}
+
+	internal fun checkInitialized() {
+		check(initialized) { "The engine hasn't been initialized" }
 	}
 
 	internal fun lockNodeTree() {
