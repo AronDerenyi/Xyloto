@@ -6,8 +6,10 @@ open class Attribute {
 	companion object {
 		private const val NOTIFYING_NOTHING: Byte = 0
 		private const val NOTIFYING_READY: Byte = 1
-		private const val NOTIFYING_ATTACH: Byte = 2
-		private const val NOTIFYING_DETACH: Byte = 3
+		private const val NOTIFYING_PARENT: Byte = 2
+		private const val NOTIFYING_SEPARATE: Byte = 3
+		private const val NOTIFYING_ATTACH: Byte = 4
+		private const val NOTIFYING_DETACH: Byte = 5
 	}
 
 	private var notifying: Byte = NOTIFYING_NOTHING
@@ -40,6 +42,26 @@ open class Attribute {
 		notifying = NOTIFYING_NOTHING
 	}
 
+	internal fun notifyParent() {
+		notifying = NOTIFYING_PARENT
+
+		onParent()
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onParent()" }
+		notified = false
+
+		notifying = NOTIFYING_NOTHING
+	}
+
+	internal fun notifySeparate() {
+		notifying = NOTIFYING_SEPARATE
+
+		onSeparate()
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onSeparate()" }
+		notified = false
+
+		notifying = NOTIFYING_NOTHING
+	}
+
 	internal fun notifyAttach() {
 		notifying = NOTIFYING_ATTACH
 
@@ -66,6 +88,26 @@ open class Attribute {
 		}
 		check(!notified) {
 			"${this::class.qualifiedName} called through to super.onReady() multiple times"
+		}
+		notified = true
+	}
+
+	protected open fun onParent() {
+		check(notifying == NOTIFYING_PARENT) {
+			"onParent() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onParent() multiple times"
+		}
+		notified = true
+	}
+
+	protected open fun onSeparate() {
+		check(notifying == NOTIFYING_SEPARATE) {
+			"onSeparate() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onSeparate() multiple times"
 		}
 		notified = true
 	}

@@ -11,6 +11,9 @@ class Node(vararg attributes: Attribute) {
 		private set(parent) {
 			field = parent
 
+			if (parent != null) attributes.forEach { it.notifyParent() }
+			else attributes.forEach { it.notifySeparate() }
+
 			val attached = parent?.attached ?: false
 			if (this.attached || attached) this.attached = attached
 		}
@@ -21,13 +24,14 @@ class Node(vararg attributes: Attribute) {
 		internal set(attached) {
 			fun Node.propagate() {
 				attachedInternal = attached
-				children.forEach(Node::propagate)
+				children.forEach { it.propagate() }
 			}
 			propagate()
 
 			fun Node.notify() {
-				attributes.forEach(if (attached) Attribute::notifyAttach else Attribute::notifyDetach)
-				children.forEach(Node::notify)
+				if (attached) attributes.forEach { it.notifyAttach() }
+				else attributes.forEach { it.notifyDetach() }
+				children.forEach { it.notify() }
 			}
 			notify()
 		}
