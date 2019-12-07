@@ -3,14 +3,15 @@ package org.xyloto
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class Attribute {
 
-	private var notifyingReady: Boolean = false
-	private var notifiedReady: Boolean = false
+	companion object {
+		private const val NOTIFYING_NOTHING: Byte = 0
+		private const val NOTIFYING_READY: Byte = 1
+		private const val NOTIFYING_ATTACH: Byte = 2
+		private const val NOTIFYING_DETACH: Byte = 3
+	}
 
-	private var notifyingAttach: Boolean = false
-	private var notifiedAttach: Boolean = false
-
-	private var notifyingDetach: Boolean = false
-	private var notifiedDetach: Boolean = false
+	private var notifying: Byte = NOTIFYING_NOTHING
+	private var notified: Boolean = false
 
 	private var nodeInternal: Node? = null
 
@@ -30,50 +31,62 @@ open class Attribute {
 	}
 
 	internal fun notifyReady() {
-		notifyingReady = true
+		notifying = NOTIFYING_READY
 
 		onReady()
-		check(notifiedReady) { "${this::class.qualifiedName} did not call through to super.onReady()" }
-		notifiedReady = false
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onReady()" }
+		notified = false
 
-		notifyingReady = false
+		notifying = NOTIFYING_NOTHING
 	}
 
 	internal fun notifyAttach() {
-		notifyingAttach = true
+		notifying = NOTIFYING_ATTACH
 
 		onAttach()
-		check(notifiedAttach) { "${this::class.qualifiedName} did not call through to super.onAttach()" }
-		notifiedAttach = false
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onAttach()" }
+		notified = false
 
-		notifyingAttach = false
+		notifying = NOTIFYING_NOTHING
 	}
 
 	internal fun notifyDetach() {
-		notifyingDetach = true
+		notifying = NOTIFYING_DETACH
 
 		onDetach()
-		check(notifiedDetach) { "${this::class.qualifiedName} did not call through to super.onDetach()" }
-		notifiedDetach = false
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onDetach()" }
+		notified = false
 
-		notifyingDetach = false
+		notifying = NOTIFYING_NOTHING
 	}
 
 	protected open fun onReady() {
-		check(notifyingReady) { "onReady() can be only called by the engine" }
-		check(!notifiedReady) { "${this::class.qualifiedName} called through to super.onReady() multiple times" }
-		notifiedReady = true
+		check(notifying == NOTIFYING_READY) {
+			"onReady() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onReady() multiple times"
+		}
+		notified = true
 	}
 
 	protected open fun onAttach() {
-		check(notifyingAttach) { "onAttach() can be only called by the engine" }
-		check(!notifiedAttach) { "${this::class.qualifiedName} called through to super.onAttach() multiple times" }
-		notifiedAttach = true
+		check(notifying == NOTIFYING_ATTACH) {
+			"onAttach() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onAttach() multiple times"
+		}
+		notified = true
 	}
 
 	protected open fun onDetach() {
-		check(notifyingDetach) { "onDetach() can be only called by the engine" }
-		check(!notifiedDetach) { "${this::class.qualifiedName} called through to super.onDetach() multiple times" }
-		notifyingDetach = true
+		check(notifying == NOTIFYING_DETACH) {
+			"onDetach() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onDetach() multiple times"
+		}
+		notified = true
 	}
 }

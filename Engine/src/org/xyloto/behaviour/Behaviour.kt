@@ -8,8 +8,8 @@ open class Behaviour : Attribute() {
 
 	private lateinit var behaviourSystem: BehaviourSystem
 
-	private var callingUpdate: Boolean = false
-	private var calledUpdate: Boolean = false
+	private var calling: Boolean = false
+	private var called: Boolean = false
 
 	private var updatingEnabled: Boolean = false
 
@@ -39,18 +39,22 @@ open class Behaviour : Attribute() {
 	internal fun update() {
 		if (!updatingEnabled) return
 
-		callingUpdate = true
+		calling = true
 
 		onUpdate()
-		check(calledUpdate) { "${this::class.qualifiedName} did not call through to super.onUpdate()" }
-		calledUpdate = false
+		check(called) { "${this::class.qualifiedName} did not call through to super.onUpdate()" }
+		called = false
 
-		callingUpdate = false
+		calling = false
 	}
 
 	protected open fun onUpdate() {
-		check(callingUpdate) { "onUpdate() can be only called by the BehaviourSystem" }
-		check(!calledUpdate) { "${this::class.qualifiedName} called through to super.onUpdate() multiple times" }
-		calledUpdate = true
+		check(calling) {
+			"onUpdate() can be only called by the BehaviourSystem"
+		}
+		check(!called) {
+			"${this::class.qualifiedName} called through to super.onUpdate() multiple times"
+		}
+		called = true
 	}
 }

@@ -3,60 +3,73 @@ package org.xyloto
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class System {
 
-	private var notifyingStart: Boolean = false
-	private var notifiedStart: Boolean = false
+	companion object {
+		private const val NOTIFYING_NOTHING: Byte = 0
+		private const val NOTIFYING_START: Byte = 1
+		private const val NOTIFYING_STOP: Byte = 2
+		private const val NOTIFYING_UPDATE: Byte = 3
+	}
 
-	private var notifyingStop: Boolean = false
-	private var notifiedStop: Boolean = false
-
-	private var callingUpdate: Boolean = false
-	private var calledUpdate: Boolean = false
+	private var notifying: Byte = NOTIFYING_NOTHING
+	private var notified: Boolean = false
 
 	internal fun notifyStart() {
-		notifyingStart = true
+		notifying = NOTIFYING_START
 
 		onStart()
-		check(notifiedStart) { "${this::class.qualifiedName} did not call through to super.onStart()" }
-		notifiedStart = false
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onStart()" }
+		notified = false
 
-		notifyingStart = false
+		notifying = NOTIFYING_NOTHING
 	}
 
 	internal fun notifyStop() {
-		notifyingStop = true
+		notifying = NOTIFYING_STOP
 
 		onStop()
-		check(notifiedStop) { "${this::class.qualifiedName} did not call through to super.onStop()" }
-		notifiedStop = false
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onStop()" }
+		notified = false
 
-		notifyingStop = false
+		notifying = NOTIFYING_NOTHING
 	}
 
 	internal fun update() {
-		callingUpdate = true
+		notifying = NOTIFYING_UPDATE
 
 		onUpdate()
-		check(calledUpdate) { "${this::class.qualifiedName} did not call through to super.onUpdate()" }
-		calledUpdate = false
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onUpdate()" }
+		notified = false
 
-		callingUpdate = false
+		notifying = NOTIFYING_NOTHING
 	}
 
 	protected open fun onStart() {
-		check(notifyingStart) { "onStart() can be only called by the engine" }
-		check(!notifiedStart) { "${this::class.qualifiedName} called through to super.onStart() multiple times" }
-		notifiedStart = true
+		check(notifying == NOTIFYING_START) {
+			"onStart() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onStart() multiple times"
+		}
+		notified = true
 	}
 
 	protected open fun onStop() {
-		check(notifyingStop) { "onStop() can be only called by the engine" }
-		check(!notifiedStop) { "${this::class.qualifiedName} called through to super.onStop() multiple times" }
-		notifiedStop = true
+		check(notifying == NOTIFYING_STOP) {
+			"onStop() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onStop() multiple times"
+		}
+		notified = true
 	}
 
 	protected open fun onUpdate() {
-		check(callingUpdate) { "onUpdate() can be only called by the engine" }
-		check(!calledUpdate) { "${this::class.qualifiedName} called through to super.onUpdate() multiple times" }
-		calledUpdate = true
+		check(notifying == NOTIFYING_UPDATE) {
+			"onUpdate() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onUpdate() multiple times"
+		}
+		notified = true
 	}
 }
