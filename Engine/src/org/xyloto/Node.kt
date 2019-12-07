@@ -7,25 +7,15 @@ class Node(vararg attributes: Attribute) {
 
 	val attributes: List<Attribute> = Collections.unmodifiableList(attributes.toList())
 
-	var root: Node = this
-		private set(root) {
-			field = root
-			children.forEach { it.root = root }
-		}
-
 	var parent: Node? = null
 		private set(parent) {
 			field = parent
-
-			val root = parent?.root ?: this
-			this.root = root
 
 			val attached = parent?.attached ?: false
 			if (this.attached || attached) this.attached = attached
 		}
 
 	private var attachedInternal = false
-
 	var attached: Boolean
 		get() = attachedInternal
 		internal set(attached) {
