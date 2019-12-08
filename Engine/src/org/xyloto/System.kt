@@ -7,7 +7,6 @@ open class System {
 		private const val NOTIFYING_NOTHING: Byte = 0
 		private const val NOTIFYING_START: Byte = 1
 		private const val NOTIFYING_STOP: Byte = 2
-		private const val NOTIFYING_UPDATE: Byte = 3
 	}
 
 	private var notifying: Byte = NOTIFYING_NOTHING
@@ -33,16 +32,6 @@ open class System {
 		notifying = NOTIFYING_NOTHING
 	}
 
-	internal fun update() {
-		notifying = NOTIFYING_UPDATE
-
-		onUpdate()
-		check(notified) { "${this::class.qualifiedName} did not call through to super.onUpdate()" }
-		notified = false
-
-		notifying = NOTIFYING_NOTHING
-	}
-
 	protected open fun onStart() {
 		check(notifying == NOTIFYING_START) {
 			"onStart() can be only called by the engine"
@@ -63,13 +52,9 @@ open class System {
 		notified = true
 	}
 
-	protected open fun onUpdate() {
-		check(notifying == NOTIFYING_UPDATE) {
-			"onUpdate() can be only called by the engine"
-		}
-		check(!notified) {
-			"${this::class.qualifiedName} called through to super.onUpdate() multiple times"
-		}
-		notified = true
+	internal fun update() {
+		onUpdate()
 	}
+
+	protected open fun onUpdate() = Unit
 }

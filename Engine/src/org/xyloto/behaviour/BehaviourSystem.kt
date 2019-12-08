@@ -13,14 +13,14 @@ object BehaviourSystem : System() {
 
 	internal fun removeBehaviour(behaviour: Behaviour) {
 		check(behaviours.remove(behaviour)) { "The behaviour has not been added to the system yet" }
-		behaviour.disableUpdating()
+		behaviour.updating = false
 	}
 
 	override fun onUpdate() {
 		super.onUpdate()
 
 		val behaviours = behaviours.toList()
-		behaviours.forEach(Behaviour::enableUpdating)
-		behaviours.forEach(Behaviour::update)
+		behaviours.forEach { it.updating = true }
+		behaviours.forEach { if (it.updating) it.update() }
 	}
 }
