@@ -3,7 +3,7 @@ package org.xyloto.behaviour
 import org.xyloto.System
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-class BehaviourSystem : System() {
+object BehaviourSystem : System() {
 
 	private val behaviours = mutableSetOf<Behaviour>()
 

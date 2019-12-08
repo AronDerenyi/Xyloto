@@ -1,31 +1,23 @@
 package org.xyloto.behaviour
 
 import org.xyloto.Attribute
-import org.xyloto.Engine
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 open class Behaviour : Attribute() {
-
-	private lateinit var behaviourSystem: BehaviourSystem
 
 	private var calling: Boolean = false
 	private var called: Boolean = false
 
 	private var updatingEnabled: Boolean = false
 
-	override fun onReady() {
-		super.onReady()
-		behaviourSystem = Engine.requireSystem()
-	}
-
 	override fun onAttach() {
 		super.onAttach()
-		behaviourSystem.addBehaviour(this)
+		BehaviourSystem.addBehaviour(this)
 	}
 
 	override fun onDetach() {
 		super.onDetach()
-		behaviourSystem.removeBehaviour(this)
+		BehaviourSystem.removeBehaviour(this)
 	}
 
 	internal fun enableUpdating() {
