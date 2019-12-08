@@ -12,10 +12,11 @@ class Node(vararg attributes: Attribute) {
 			field = parent
 
 			if (parent != null) attributes.forEach { it.notifyParent() }
-			else attributes.forEach { it.notifySeparate() }
 
 			val attached = parent?.attached ?: false
 			if (this.attached || attached) this.attached = attached
+
+			if (parent == null) attributes.forEach { it.notifySeparate() }
 		}
 
 	private var attachedInternal = false
@@ -29,8 +30,11 @@ class Node(vararg attributes: Attribute) {
 			propagate()
 
 			fun Node.notify() {
-				if (attached) attributes.forEach { it.notifyAttach() }
-				else attributes.forEach { it.notifyDetach() }
+				if (attached) {
+					attributes.forEach { it.notifyAttach() }
+				} else {
+					attributes.forEach { it.notifyDetach() }
+				}
 				children.forEach { it.notify() }
 			}
 			notify()
