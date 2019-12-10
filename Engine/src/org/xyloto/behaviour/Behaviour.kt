@@ -3,7 +3,7 @@ package org.xyloto.behaviour
 import org.xyloto.Attribute
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-open class Behaviour : Attribute() {
+abstract class Behaviour : Attribute() {
 
 	internal var updating: Boolean = false
 

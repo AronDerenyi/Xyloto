@@ -1,7 +1,7 @@
 package org.xyloto
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
-open class Attribute {
+abstract class Attribute {
 
 	companion object {
 		private const val NOTIFYING_NOTHING: Byte = 0
