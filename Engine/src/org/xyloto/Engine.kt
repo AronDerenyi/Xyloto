@@ -12,17 +12,23 @@ object Engine {
 	private var nodeTreeLocked: Boolean = false
 
 	private val mutableSystems: MutableList<System> = LinkedList()
+
+	@JvmStatic
 	val systems: List<System> = Collections.unmodifiableList(mutableSystems)
 
 	private val mutableRoots: MutableList<Node> = LinkedList()
+
+	@JvmStatic
 	val roots: List<Node> = Collections.unmodifiableList(mutableRoots)
 
+	@JvmStatic
 	fun init(vararg systems: System) {
 		check(!initialized) { "The engine has already been initialized" }
 		mutableSystems.addAll(systems)
 		initialized = true
 	}
 
+	@JvmStatic
 	fun start() {
 		checkInitialized()
 		check(!started) { "The engine has already been started" }
@@ -36,6 +42,7 @@ object Engine {
 		started = false
 	}
 
+	@JvmStatic
 	fun stop() {
 		check(started) { "The engine hasn't been started" }
 		running = false
@@ -55,6 +62,7 @@ object Engine {
 		nodeTreeLocked = false
 	}
 
+	@JvmStatic
 	fun add(node: Node) {
 		lockNodeTree()
 
@@ -67,6 +75,7 @@ object Engine {
 		unlockNodeTree()
 	}
 
+	@JvmStatic
 	fun remove(node: Node) {
 		lockNodeTree()
 
@@ -76,6 +85,7 @@ object Engine {
 		unlockNodeTree()
 	}
 
+	@JvmStatic
 	@JvmName("getSystemInlined")
 	inline fun <reified T : System> getSystem(): T? {
 		for (system in systems) {
@@ -85,15 +95,18 @@ object Engine {
 		return null
 	}
 
+	@JvmStatic
 	@JvmName("requireSystemInlined")
 	inline fun <reified T : System> requireSystem(): T {
 		return getSystem() ?: throw Exception("${T::class.qualifiedName} is missing")
 	}
 
+	@JvmStatic
 	fun <T : Attribute> getSystem(type: Class<T>): T? {
 		return getSystem(type)
 	}
 
+	@JvmStatic
 	fun <T : Attribute> requireSystem(type: Class<T>): T {
 		return requireSystem(type)
 	}
