@@ -19,6 +19,9 @@ object Engine {
 	@JvmStatic
 	var root: Node? = null
 		set(node) {
+			if (node == root) return
+			check(node?.parent == null) { "The given node already has a parent" }
+
 			lockNodeTree()
 
 			field?.let {
@@ -27,9 +30,6 @@ object Engine {
 			}
 
 			node?.let {
-				check(it.parent == null) { "The given node already has a parent" }
-				check(!it.attached) { "The given node has already been attached as a root" }
-
 				field = it
 				it.attached = true
 			}
