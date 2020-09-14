@@ -1,7 +1,6 @@
 package org.xyloto
 
 import java.util.*
-import kotlin.collections.ArrayList
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Node(vararg attributes: Attribute) {
