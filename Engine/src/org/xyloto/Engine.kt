@@ -16,10 +16,26 @@ object Engine {
 	@JvmStatic
 	val systems: List<System> = Collections.unmodifiableList(mutableSystems)
 
-	private val mutableRoots: MutableList<Node> = LinkedList()
-
 	@JvmStatic
-	val roots: List<Node> = Collections.unmodifiableList(mutableRoots)
+	var root: Node? = null
+		set(node) {
+			lockNodeTree()
+
+			field?.apply {
+				field = null
+				attached = false
+			}
+
+			node?.apply {
+				check(parent == null) { "The given node already has a parent" }
+				check(!attached) { "The given node has already been attached as a root" }
+
+				field = this
+				attached = true
+			}
+
+			unlockNodeTree()
+		}
 
 	@JvmStatic
 	fun init(vararg systems: System) {
@@ -60,29 +76,6 @@ object Engine {
 	internal fun unlockNodeTree() {
 		check(nodeTreeLocked) { "The node tree isn't locked" }
 		nodeTreeLocked = false
-	}
-
-	@JvmStatic
-	fun add(node: Node) {
-		lockNodeTree()
-
-		check(node.parent == null) { "The given node already has a parent" }
-		check(!node.attached) { "The given node has already been attached as a root" }
-
-		mutableRoots.add(node)
-		node.attached = true
-
-		unlockNodeTree()
-	}
-
-	@JvmStatic
-	fun remove(node: Node) {
-		lockNodeTree()
-
-		check(mutableRoots.remove(node)) { "The given node isn't a child" }
-		node.attached = false
-
-		unlockNodeTree()
 	}
 
 	@JvmStatic
