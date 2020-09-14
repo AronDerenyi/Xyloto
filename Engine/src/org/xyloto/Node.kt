@@ -10,6 +10,7 @@ class Node(vararg attributes: Attribute) {
 	var parent: Node? = null
 		set(node) {
 			if (node == parent) return
+			check(node != this) { "A node can't be it's own parent" }
 			check(this != Engine.root) { "The root can't have a parent" }
 
 			Engine.lockNodeTree()
