@@ -23,17 +23,14 @@ object Engine {
 			check(node?.parent == null) { "The given node already has a parent" }
 
 			lockNodeTree()
-
 			field?.let {
 				field = null
 				it.attached = false
 			}
-
 			node?.let {
 				field = it
 				it.attached = true
 			}
-
 			unlockNodeTree()
 		}
 
