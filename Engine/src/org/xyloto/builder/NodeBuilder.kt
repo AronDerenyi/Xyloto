@@ -16,6 +16,6 @@ inline fun build(vararg attributes: Attribute, init: NodeBuilder.() -> Unit = {}
 
 inline fun NodeBuilder.node(vararg attributes: Attribute, init: NodeBuilder.() -> Unit = {}): Node {
 	val node = build(*attributes) { init() }
-	this.node.add(node)
+	node.parent = this.node
 	return node
 }

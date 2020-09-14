@@ -1,22 +1,34 @@
 package org.xyloto
 
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Node(vararg attributes: Attribute) {
 
-	val attributes: List<Attribute> = Collections.unmodifiableList(attributes.toList())
+	val attributes: List<Attribute> = Collections.unmodifiableList(attributes.asList())
 
 	var parent: Node? = null
-		private set(parent) {
-			field = parent
+		set(node) {
+			if (node == parent) return
+			check(this != Engine.root) { "The root can't have a parent" }
 
-			if (parent != null) attributes.forEach { it.notifyParent() }
+			Engine.lockNodeTree()
+			field?.let {
+				field = null
+				it.mutableChildren.remove(this)
 
-			val attached = parent?.attached ?: false
-			if (this.attached || attached) this.attached = attached
+				if (attached) attached = false
+				attributes.forEach(Attribute::notifySeparate)
+			}
+			node?.let {
+				field = it
+				it.mutableChildren.add(this)
 
-			if (parent == null) attributes.forEach { it.notifySeparate() }
+				attributes.forEach(Attribute::notifyParent)
+				if (attached || node.attached) attached = node.attached
+			}
+			Engine.unlockNodeTree()
 		}
 
 	private var attachedInternal = false
@@ -25,19 +37,23 @@ class Node(vararg attributes: Attribute) {
 		internal set(attached) {
 			fun Node.propagate() {
 				attachedInternal = attached
-				children.forEach { it.propagate() }
+				children.forEach(Node::propagate)
 			}
 			propagate()
 
-			fun Node.notify() {
-				if (attached) {
-					attributes.forEach { it.notifyAttach() }
-				} else {
-					attributes.forEach { it.notifyDetach() }
+			if (attached) {
+				fun Node.notify() {
+					attributes.forEach(Attribute::notifyAttach)
+					children.forEach(Node::notify)
 				}
-				children.forEach { it.notify() }
+				notify()
+			} else {
+				fun Node.notify() {
+					attributes.forEach(Attribute::notifyDetach)
+					children.forEach(Node::notify)
+				}
+				notify()
 			}
-			notify()
 		}
 
 	private val mutableChildren: MutableList<Node> = LinkedList()
@@ -46,28 +62,7 @@ class Node(vararg attributes: Attribute) {
 	init {
 		Engine.checkInitialized()
 		attributes.forEach { it.link(this) }
-		attributes.forEach(Attribute::notifyReady)
-	}
-
-	fun add(node: Node) {
-		Engine.lockNodeTree()
-
-		check(node.parent == null) { "The given node already has a parent" }
-		check(!node.attached) { "The given node has already been attached as a root" }
-
-		mutableChildren.add(node)
-		node.parent = this
-
-		Engine.unlockNodeTree()
-	}
-
-	fun remove(node: Node) {
-		Engine.lockNodeTree()
-
-		check(mutableChildren.remove(node)) { "The given node isn't a child" }
-		node.parent = null
-
-		Engine.unlockNodeTree()
+		attributes.forEach { it.notifyReady() }
 	}
 
 	@JvmName("getAttributeInlined")
