@@ -21,17 +21,17 @@ object Engine {
 		set(node) {
 			lockNodeTree()
 
-			field?.apply {
+			field?.let {
 				field = null
-				attached = false
+				it.attached = false
 			}
 
-			node?.apply {
-				check(parent == null) { "The given node already has a parent" }
-				check(!attached) { "The given node has already been attached as a root" }
+			node?.let {
+				check(it.parent == null) { "The given node already has a parent" }
+				check(!it.attached) { "The given node has already been attached as a root" }
 
-				field = this
-				attached = true
+				field = it
+				it.attached = true
 			}
 
 			unlockNodeTree()
