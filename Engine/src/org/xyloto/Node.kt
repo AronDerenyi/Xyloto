@@ -1,6 +1,7 @@
 package org.xyloto
 
 import org.xyloto.collections.ArrayWrapperList
+import org.xyloto.collections.toImmutable
 import java.util.*
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
@@ -58,7 +59,7 @@ class Node(vararg attributes: Attribute) {
 		}
 
 	private val mutableChildren: MutableList<Node> = LinkedList()
-	val children: List<Node> = Collections.unmodifiableList(mutableChildren)
+	val children: List<Node> = mutableChildren.toImmutable()
 
 	init {
 		Engine.checkInitialized()
