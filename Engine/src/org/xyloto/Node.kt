@@ -1,11 +1,12 @@
 package org.xyloto
 
+import org.xyloto.collections.ArrayWrapperList
 import java.util.*
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Node(vararg attributes: Attribute) {
 
-	val attributes: List<Attribute> = Collections.unmodifiableList(attributes.asList())
+	val attributes: List<Attribute> = ArrayWrapperList(attributes.clone())
 
 	var parent: Node? = null
 		set(node) {

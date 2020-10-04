@@ -1,6 +1,6 @@
 package org.xyloto
 
-import java.util.*
+import org.xyloto.collections.ArrayWrapperList
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object Engine {
@@ -11,10 +11,11 @@ object Engine {
 
 	private var nodeTreeLocked: Boolean = false
 
-	private val mutableSystems: MutableList<System> = LinkedList()
+	private var systemsInternal: List<System>? = null
 
 	@JvmStatic
-	val systems: List<System> = Collections.unmodifiableList(mutableSystems)
+	val systems: List<System>
+		get() = systemsInternal ?: throw IllegalStateException("The engine hasn't been initialized")
 
 	@JvmStatic
 	var root: Node? = null
@@ -37,7 +38,7 @@ object Engine {
 	@JvmStatic
 	fun init(vararg systems: System) {
 		check(!initialized) { "The engine has already been initialized" }
-		mutableSystems.addAll(systems)
+		systemsInternal = ArrayWrapperList(systems.clone())
 		initialized = true
 	}
 
