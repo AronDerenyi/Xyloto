@@ -1,6 +1,7 @@
 package org.xyloto
 
 import org.xyloto.collections.ArrayWrapperList
+import org.xyloto.collections.HandledCollection
 import org.xyloto.collections.toImmutable
 import java.util.*
 
@@ -9,26 +10,28 @@ class Node(vararg attributes: Attribute) {
 
 	val attributes: List<Attribute> = ArrayWrapperList(attributes.clone())
 
+	private var parentHandle: HandledCollection<Node>.Handle? = null
 	var parent: Node? = null
-		set(node) {
-			if (node == parent) return
-			check(node != this) { "A node can't be it's own parent" }
+		set(parent) {
+			if (parent == parent) return
+			check(parent != this) { "A node can't be it's own parent" }
 			check(this != Engine.root) { "The root can't have a parent" }
 
 			Engine.lockNodeTree()
 			field?.let {
 				field = null
-				it.mutableChildren.remove(this)
+				parentHandle?.remove()
+				parentHandle = null
 
 				if (attached) attached = false
 				attributes.forEach(Attribute::notifySeparate)
 			}
-			node?.let {
+			parent?.let {
 				field = it
-				it.mutableChildren.add(this)
+				parentHandle = it.mutableChildren.Handle(this)
 
 				attributes.forEach(Attribute::notifyParent)
-				if (attached || node.attached) attached = node.attached
+				if (attached || parent.attached) attached = parent.attached
 			}
 			Engine.unlockNodeTree()
 		}
@@ -58,8 +61,8 @@ class Node(vararg attributes: Attribute) {
 			}
 		}
 
-	private val mutableChildren: MutableList<Node> = LinkedList()
-	val children: List<Node> = mutableChildren.toImmutable()
+	private val mutableChildren = HandledCollection<Node>()
+	val children: Collection<Node> = mutableChildren.toImmutable()
 
 	init {
 		Engine.checkInitialized()

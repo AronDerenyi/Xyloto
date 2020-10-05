@@ -20,6 +20,20 @@ fun <T> MutableListIterator<T>.toImmutable(): ListIterator<T> {
 	}
 }
 
+fun <T> MutableCollection<T>.toImmutable(): Collection<T> {
+	val mutableCollection = this
+	return object : Collection<T> {
+
+		override val size get() = mutableCollection.size
+
+		override fun isEmpty() = mutableCollection.isEmpty()
+		override fun contains(element: T) = mutableCollection.contains(element)
+		override fun containsAll(elements: Collection<T>) = mutableCollection.containsAll(elements)
+
+		override fun iterator() = mutableCollection.iterator().toImmutable()
+	}
+}
+
 fun <T> MutableList<T>.toImmutable(): List<T> {
 	val mutableList = this
 	return object : List<T> {
