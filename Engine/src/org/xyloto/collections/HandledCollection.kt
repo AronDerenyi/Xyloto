@@ -1,8 +1,9 @@
+@file:Suppress("unused")
+
 package org.xyloto.collections
 
 import kotlin.NoSuchElementException
 
-// TODO: Faster forEach implementation
 class HandledCollection<T> : MutableCollection<T> {
 
 	var first: Handle? = null
@@ -17,11 +18,7 @@ class HandledCollection<T> : MutableCollection<T> {
 	override fun isEmpty() = sizeInternal == 0
 
 	override fun contains(element: T): Boolean {
-		var handle = first
-		while (handle != null) {
-			if (handle.value == element) return true
-			handle = handle.next
-		}
+		forEach { if (it == element) return true }
 		return false
 	}
 
@@ -41,22 +38,18 @@ class HandledCollection<T> : MutableCollection<T> {
 	}
 
 	override fun clear() {
-		var handle = first
-		while (handle != null) {
-			val next = handle.next
-			handle.remove()
-			handle = next
+		val iterator = iterator()
+		while (iterator.hasNext()) {
+			iterator.next()
+			iterator.remove()
 		}
 	}
 
 	override fun remove(element: T): Boolean {
-		var handle = first
-		while (handle != null) {
-			if (handle.value == element) {
-				handle.remove()
-				return true
-			}
-			handle = handle.next
+		val iterator = iterator()
+		while (iterator.hasNext()) if (iterator.next() == element) {
+			iterator.remove()
+			return true
 		}
 		return false
 	}
@@ -69,14 +62,10 @@ class HandledCollection<T> : MutableCollection<T> {
 
 	override fun retainAll(elements: Collection<T>): Boolean {
 		var result = false
-		var handle = first
-		while (handle != null) {
-			val next = handle.next
-			if (!elements.contains(handle.value)) {
-				handle.remove()
-				result = true
-			}
-			handle = next
+		val iterator = iterator()
+		while (iterator.hasNext()) if (!elements.contains(iterator.next())) {
+			iterator.remove()
+			result = true
 		}
 		return result
 	}
@@ -116,6 +105,8 @@ class HandledCollection<T> : MutableCollection<T> {
 
 		init {
 			previous?.next = this
+
+			if (first == null) first = this
 			last = this
 
 			++sizeInternal
@@ -149,8 +140,4 @@ class HandledCollection<T> : MutableCollection<T> {
 			--sizeInternal
 		}
 	}
-}
-
-fun <T> HandledCollection<T>.forEach(action: (T) -> Unit) {
-
 }
