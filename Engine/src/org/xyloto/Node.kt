@@ -14,29 +14,30 @@ class Node(vararg attributes: Attribute) {
 	var parent: Node? = null
 		set(parent) {
 			checkDestroyed()
+			NodeTreeLock.check(NodeTreeLock.LOCK_PARENT)
 
 			if (parent == field) return
 			parent?.checkDestroyed()
 			check(parent != this) { "A node can't be it's own parent" }
 			check(this != Engine.root) { "The root can't have a parent" }
 
-			Engine.lockNodeTree(Engine.LOCK_PARENT)
-			field?.let {
-				field = null
-				parentHandle?.remove()
-				parentHandle = null
+			NodeTreeLock.use(NodeTreeLock.LOCK_PARENT) {
+				field?.let {
+					field = null
+					parentHandle?.remove()
+					parentHandle = null
 
-				if (attached) attached = false
-				attributes.forEach { it.notifySeparate() }
-			}
-			parent?.let {
-				field = it
-				parentHandle = it.mutableChildren.Handle(this)
+					if (attached) attached = false
+					attributes.forEach { it.notifySeparate() }
+				}
+				parent?.let {
+					field = it
+					parentHandle = it.mutableChildren.Handle(this)
 
-				attributes.forEach { it.notifyParent() }
-				if (attached || it.attached) attached = it.attached
+					attributes.forEach { it.notifyParent() }
+					if (attached || it.attached) attached = it.attached
+				}
 			}
-			Engine.unlockNodeTree()
 		}
 
 	private var attachedInternal = false
@@ -78,6 +79,7 @@ class Node(vararg attributes: Attribute) {
 
 	fun destroy() {
 		checkDestroyed()
+		NodeTreeLock.check(NodeTreeLock.LOCK_DESTROY)
 
 		children.forEach { it.destroy() }
 
@@ -87,10 +89,10 @@ class Node(vararg attributes: Attribute) {
 			parent = null
 		}
 
-		Engine.lockNodeTree(Engine.LOCK_DESTROY)
-		attributes.forEach { it.notifyDestroy() }
-		destroyed = true
-		Engine.unlockNodeTree()
+		NodeTreeLock.use(NodeTreeLock.LOCK_DESTROY) {
+			attributes.forEach { it.notifyDestroy() }
+			destroyed = true
+		}
 	}
 
 	internal fun checkDestroyed() {
