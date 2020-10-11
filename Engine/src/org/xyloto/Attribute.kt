@@ -104,7 +104,7 @@ abstract class Attribute {
 	}
 
 	protected open fun onDestroy() {
-		check(notifying == NOTIFYING_READY) {
+		check(notifying == NOTIFYING_DESTROY) {
 			"onDestroy() can be only called by the engine"
 		}
 		check(!notified) {
