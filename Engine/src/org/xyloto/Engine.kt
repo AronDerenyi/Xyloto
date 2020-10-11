@@ -9,7 +9,11 @@ object Engine {
 	private var started: Boolean = false
 	private var running: Boolean = false
 
-	private var nodeTreeLocked: Boolean = false
+	internal const val LOCK_NOTHING: Byte = 0
+	internal const val LOCK_ROOT: Byte = 1
+	internal const val LOCK_PARENT: Byte = 2
+	internal const val LOCK_DESTROY: Byte = 3
+	private var nodeTreeLock: Byte = LOCK_NOTHING
 
 	private var systemsInternal: List<System>? = null
 
@@ -24,7 +28,7 @@ object Engine {
 			root?.checkDestroyed()
 			check(root?.parent == null) { "The node already has a parent" }
 
-			lockNodeTree()
+			lockNodeTree(LOCK_ROOT)
 			field?.let {
 				field = null
 				it.attached = false
@@ -67,14 +71,21 @@ object Engine {
 		check(initialized) { "The engine hasn't been initialized" }
 	}
 
-	internal fun lockNodeTree() {
-		check(!nodeTreeLocked) { "The node tree is locked" }
-		nodeTreeLocked = true
+	internal fun lockNodeTree(lock: Byte) {
+		check(nodeTreeLock == LOCK_NOTHING) {
+			when (nodeTreeLock) {
+				LOCK_ROOT -> "Can't modify the node tree while the root is being set"
+				LOCK_PARENT -> "Can't modify the node tree while a parent is being set"
+				LOCK_DESTROY -> "Can't modify the node tree while a node is being destroyed"
+				else -> "Can't modify the node tree"
+			}
+		}
+		nodeTreeLock = lock
 	}
 
 	internal fun unlockNodeTree() {
-		check(nodeTreeLocked) { "The node tree isn't locked" }
-		nodeTreeLocked = false
+		check(nodeTreeLock != LOCK_NOTHING) { "The node tree isn't locked" }
+		nodeTreeLock = LOCK_NOTHING
 	}
 
 	@JvmStatic

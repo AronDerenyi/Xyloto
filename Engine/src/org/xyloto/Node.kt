@@ -20,7 +20,7 @@ class Node(vararg attributes: Attribute) {
 			check(parent != this) { "A node can't be it's own parent" }
 			check(this != Engine.root) { "The root can't have a parent" }
 
-			Engine.lockNodeTree()
+			Engine.lockNodeTree(Engine.LOCK_PARENT)
 			field?.let {
 				field = null
 				parentHandle?.remove()
@@ -87,7 +87,7 @@ class Node(vararg attributes: Attribute) {
 			parent = null
 		}
 
-		Engine.lockNodeTree()
+		Engine.lockNodeTree(Engine.LOCK_DESTROY)
 		attributes.forEach { it.notifyDestroy() }
 		destroyed = true
 		Engine.unlockNodeTree()
