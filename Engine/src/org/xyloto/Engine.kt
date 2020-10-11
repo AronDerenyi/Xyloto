@@ -19,17 +19,17 @@ object Engine {
 
 	@JvmStatic
 	var root: Node? = null
-		set(node) {
-			if (node == root) return
-			node?.checkDestroyed()
-			check(node?.parent == null) { "The node already has a parent" }
+		set(root) {
+			if (root == field) return
+			root?.checkDestroyed()
+			check(root?.parent == null) { "The node already has a parent" }
 
 			lockNodeTree()
 			field?.let {
 				field = null
 				it.attached = false
 			}
-			node?.let {
+			root?.let {
 				field = it
 				it.attached = true
 			}

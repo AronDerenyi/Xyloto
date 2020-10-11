@@ -15,7 +15,7 @@ class Node(vararg attributes: Attribute) {
 		set(parent) {
 			checkDestroyed()
 
-			if (parent == parent) return
+			if (parent == field) return
 			parent?.checkDestroyed()
 			check(parent != this) { "A node can't be it's own parent" }
 			check(this != Engine.root) { "The root can't have a parent" }
