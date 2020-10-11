@@ -13,7 +13,10 @@ class Node(vararg attributes: Attribute) {
 	private var parentHandle: HandledCollection<Node>.Handle? = null
 	var parent: Node? = null
 		set(parent) {
+			checkDestroyed()
+
 			if (parent == parent) return
+			parent?.checkDestroyed()
 			check(parent != this) { "A node can't be it's own parent" }
 			check(this != Engine.root) { "The root can't have a parent" }
 
@@ -24,14 +27,14 @@ class Node(vararg attributes: Attribute) {
 				parentHandle = null
 
 				if (attached) attached = false
-				attributes.forEach(Attribute::notifySeparate)
+				attributes.forEach { it.notifySeparate() }
 			}
 			parent?.let {
 				field = it
 				parentHandle = it.mutableChildren.Handle(this)
 
-				attributes.forEach(Attribute::notifyParent)
-				if (attached || parent.attached) attached = parent.attached
+				attributes.forEach { it.notifyParent() }
+				if (attached || it.attached) attached = it.attached
 			}
 			Engine.unlockNodeTree()
 		}
@@ -42,24 +45,27 @@ class Node(vararg attributes: Attribute) {
 		internal set(attached) {
 			fun Node.propagate() {
 				attachedInternal = attached
-				children.forEach(Node::propagate)
+				children.forEach { it.propagate() }
 			}
 			propagate()
 
 			if (attached) {
 				fun Node.notify() {
-					attributes.forEach(Attribute::notifyAttach)
-					children.forEach(Node::notify)
+					attributes.forEach { it.notifyAttach() }
+					children.forEach { it.notify() }
 				}
 				notify()
 			} else {
 				fun Node.notify() {
-					children.forEach(Node::notify)
-					attributes.forEach(Attribute::notifyDetach)
+					children.forEach { it.notify() }
+					attributes.forEach { it.notifyDetach() }
 				}
 				notify()
 			}
 		}
+
+	var destroyed = false
+		private set
 
 	private val mutableChildren = HandledCollection<Node>()
 	val children: Collection<Node> = mutableChildren.toImmutable()
@@ -68,6 +74,27 @@ class Node(vararg attributes: Attribute) {
 		Engine.checkInitialized()
 		attributes.forEach { it.link(this) }
 		attributes.forEach { it.notifyReady() }
+	}
+
+	fun destroy() {
+		checkDestroyed()
+
+		children.forEach { it.destroy() }
+
+		if (this == Engine.root) {
+			Engine.root = null
+		} else {
+			parent = null
+		}
+
+		Engine.lockNodeTree()
+		attributes.forEach { it.notifyDestroy() }
+		destroyed = true
+		Engine.unlockNodeTree()
+	}
+
+	internal fun checkDestroyed() {
+		check(!destroyed) { "The node has already been destroyed" }
 	}
 
 	@JvmName("getAttributeInlined")

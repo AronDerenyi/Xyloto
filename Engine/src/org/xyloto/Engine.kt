@@ -21,7 +21,8 @@ object Engine {
 	var root: Node? = null
 		set(node) {
 			if (node == root) return
-			check(node?.parent == null) { "The given node already has a parent" }
+			node?.checkDestroyed()
+			check(node?.parent == null) { "The node already has a parent" }
 
 			lockNodeTree()
 			field?.let {

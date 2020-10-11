@@ -6,10 +6,11 @@ abstract class Attribute {
 	companion object {
 		private const val NOTIFYING_NOTHING: Byte = 0
 		private const val NOTIFYING_READY: Byte = 1
-		private const val NOTIFYING_PARENT: Byte = 2
-		private const val NOTIFYING_SEPARATE: Byte = 3
-		private const val NOTIFYING_ATTACH: Byte = 4
-		private const val NOTIFYING_DETACH: Byte = 5
+		private const val NOTIFYING_DESTROY: Byte = 2
+		private const val NOTIFYING_PARENT: Byte = 3
+		private const val NOTIFYING_SEPARATE: Byte = 4
+		private const val NOTIFYING_ATTACH: Byte = 5
+		private const val NOTIFYING_DETACH: Byte = 6
 	}
 
 	private var notifying: Byte = NOTIFYING_NOTHING
@@ -37,6 +38,16 @@ abstract class Attribute {
 
 		onReady()
 		check(notified) { "${this::class.qualifiedName} did not call through to super.onReady()" }
+		notified = false
+
+		notifying = NOTIFYING_NOTHING
+	}
+
+	internal fun notifyDestroy() {
+		notifying = NOTIFYING_DESTROY
+
+		onDestroy()
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onDestroy()" }
 		notified = false
 
 		notifying = NOTIFYING_NOTHING
@@ -88,6 +99,16 @@ abstract class Attribute {
 		}
 		check(!notified) {
 			"${this::class.qualifiedName} called through to super.onReady() multiple times"
+		}
+		notified = true
+	}
+
+	protected open fun onDestroy() {
+		check(notifying == NOTIFYING_READY) {
+			"onDestroy() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onDestroy() multiple times"
 		}
 		notified = true
 	}
