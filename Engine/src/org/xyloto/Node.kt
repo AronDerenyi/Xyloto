@@ -54,8 +54,8 @@ class Node(vararg attributes: Attribute) {
 				notify()
 			} else {
 				fun Node.notify() {
-					attributes.forEach(Attribute::notifyDetach)
 					children.forEach(Node::notify)
+					attributes.forEach(Attribute::notifyDetach)
 				}
 				notify()
 			}
