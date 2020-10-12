@@ -1,20 +1,21 @@
 package org.xyloto.behaviour
 
 import org.xyloto.Attribute
+import org.xyloto.collections.HandledCollection
 
-@Suppress("unused", "MemberVisibilityCanBePrivate")
 abstract class Behaviour : Attribute() {
 
-	internal var updating: Boolean = false
+	private var handle: HandledCollection<Behaviour>.Handle? = null
 
 	override fun onAttach() {
 		super.onAttach()
-		BehaviourSystem.addBehaviour(this)
+		handle = BehaviourSystem.behaviours.Handle(this)
 	}
 
 	override fun onDetach() {
 		super.onDetach()
-		BehaviourSystem.removeBehaviour(this)
+		handle?.remove()
+		handle = null
 	}
 
 	internal fun update() {
