@@ -10,7 +10,8 @@ internal object NodeTreeLock {
 	private var lock: Byte = LOCK_NOTHING
 
 	fun check(lock: Byte) {
-		check(this.lock == LOCK_NOTHING) {
+		if (this.lock == LOCK_NOTHING) return
+		throw ConcurrentModificationException(
 			when (lock) {
 				LOCK_ROOT -> "Can't change the root"
 				LOCK_PARENT -> "Can't change the parent"
@@ -23,7 +24,7 @@ internal object NodeTreeLock {
 				LOCK_DESTROY -> " while a node is being destroyed"
 				else -> ""
 			}
-		}
+		)
 	}
 
 	inline fun use(lock: Byte, block: () -> Unit) {
