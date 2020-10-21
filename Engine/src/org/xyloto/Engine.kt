@@ -80,7 +80,7 @@ object Engine {
 	@JvmStatic
 	@JvmName("requireSystemInlined")
 	inline fun <reified T : System> requireSystem(): T {
-		return getSystem() ?: throw Exception("${T::class.qualifiedName} is missing")
+		return getSystem() ?: throw NoSuchElementException("${T::class.qualifiedName} is missing")
 	}
 
 	@JvmStatic

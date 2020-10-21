@@ -4,6 +4,7 @@ import org.xyloto.collections.ArrayWrapperList
 import org.xyloto.collections.HandledCollection
 import org.xyloto.collections.toImmutable
 import java.util.*
+import kotlin.NoSuchElementException
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Node(vararg attributes: Attribute) {
@@ -110,7 +111,7 @@ class Node(vararg attributes: Attribute) {
 
 	@JvmName("requireAttributeInlined")
 	inline fun <reified T : Attribute> requireAttribute(): T {
-		return getAttribute() ?: throw Exception("${T::class.qualifiedName} is missing")
+		return getAttribute() ?: throw NoSuchElementException("${T::class.qualifiedName} is missing")
 	}
 
 	@JvmName("getAttributesInlined")
