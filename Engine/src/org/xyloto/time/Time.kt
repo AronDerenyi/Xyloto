@@ -23,6 +23,7 @@ object Time : System() {
 		} else {
 			start = nanoTime
 			last = nanoTime
+			started = true
 		}
 	}
 }
