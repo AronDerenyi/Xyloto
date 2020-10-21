@@ -1,8 +1,6 @@
 package org.xyloto.collections
 
-import java.util.*
-
-fun <T> MutableIterator<T>.toImmutable(): Iterator<T> {
+fun <T> Iterator<T>.toImmutable(): Iterator<T> {
 	val mutableIterator = this
 	return object : Iterator<T> {
 		override fun hasNext() = mutableIterator.hasNext()
@@ -10,7 +8,7 @@ fun <T> MutableIterator<T>.toImmutable(): Iterator<T> {
 	}
 }
 
-fun <T> MutableListIterator<T>.toImmutable(): ListIterator<T> {
+fun <T> ListIterator<T>.toImmutable(): ListIterator<T> {
 	val mutableListIterator = this
 	return object : ListIterator<T> {
 		override fun hasNext() = mutableListIterator.hasNext()
@@ -22,7 +20,7 @@ fun <T> MutableListIterator<T>.toImmutable(): ListIterator<T> {
 	}
 }
 
-fun <E> MutableCollection<E>.toImmutable(): Collection<E> {
+fun <E> Collection<E>.toImmutable(): Collection<E> {
 	val mutableCollection = this
 	return object : Collection<E> {
 
@@ -36,7 +34,7 @@ fun <E> MutableCollection<E>.toImmutable(): Collection<E> {
 	}
 }
 
-fun <E> MutableList<E>.toImmutable(): List<E> {
+fun <E> List<E>.toImmutable(): List<E> {
 	val mutableList = this
 	return object : List<E> {
 
@@ -58,7 +56,7 @@ fun <E> MutableList<E>.toImmutable(): List<E> {
 	}
 }
 
-fun <E> MutableSet<E>.toImmutable(): Set<E> {
+fun <E> Set<E>.toImmutable(): Set<E> {
 	val mutableSet = this
 	return object : Set<E> {
 
@@ -72,7 +70,7 @@ fun <E> MutableSet<E>.toImmutable(): Set<E> {
 	}
 }
 
-fun <K, V> MutableMap<K, V>.toImmutable(): Map<K, V> {
+fun <K, V> Map<K, V>.toImmutable(): Map<K, V> {
 	val mutableMap = this
 	return object : Map<K, V> {
 
