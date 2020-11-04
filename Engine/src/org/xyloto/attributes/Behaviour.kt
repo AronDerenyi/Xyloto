@@ -10,13 +10,9 @@ abstract class Behaviour : HandledAttribute<Behaviour>(behaviours) {
 		private val behaviours = HandledCollection<Behaviour>()
 
 		override fun onUpdate() {
-			behaviours.forEach { it.update() }
+			behaviours.forEach { it.onUpdate() }
 		}
 	}
 
-	internal fun update() {
-		onUpdate()
-	}
-
-	protected open fun onUpdate() = Unit
+	protected abstract fun onUpdate()
 }
