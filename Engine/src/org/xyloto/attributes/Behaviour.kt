@@ -3,7 +3,7 @@ package org.xyloto.attributes
 import org.xyloto.System
 import org.xyloto.collections.HandledCollection
 
-abstract class Behaviour : HandledAttribute<Behaviour>(behaviours) {
+abstract class Behaviour : HandledAttribute(behaviours) {
 
 	companion object : System() {
 
