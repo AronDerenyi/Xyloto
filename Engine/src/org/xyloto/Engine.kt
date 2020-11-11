@@ -25,14 +25,11 @@ object Engine {
 			check(root?.parent == null) { "The node already has a parent" }
 
 			NodeTreeLock.use(NodeTreeLock.LOCK_ROOT) {
-				field?.let {
-					field = null
-					it.attached = false
-				}
-				root?.let {
-					field = it
-					it.attached = true
-				}
+				val oldRoot = field
+				field = root
+
+				if (oldRoot != null) oldRoot.attached = false
+				if (root != null) root.attached = true
 			}
 		}
 
