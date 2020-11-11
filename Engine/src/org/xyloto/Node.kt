@@ -23,20 +23,22 @@ class Node(vararg attributes: Attribute) {
 			check(this != Engine.root) { "The root can't have a parent" }
 
 			NodeTreeLock.use(NodeTreeLock.LOCK_PARENT) {
-				field?.let {
-					field = null
+				val oldParent = field
+				field = parent
+
+				if (oldParent != null) {
 					parentHandle?.remove()
 					parentHandle = null
 
 					if (attached) attached = false
 					attributes.forEach { it.notifySeparate() }
 				}
-				parent?.let {
-					field = it
-					parentHandle = it.mutableChildren.Handle(this)
+
+				if (parent != null) {
+					parentHandle = parent.mutableChildren.Handle(this)
 
 					attributes.forEach { it.notifyParent() }
-					if (attached || it.attached) attached = it.attached
+					if (attached || parent.attached) attached = parent.attached
 				}
 			}
 		}
