@@ -5,12 +5,13 @@ abstract class Attribute {
 
 	companion object {
 		private const val NOTIFYING_NOTHING: Byte = 0
-		private const val NOTIFYING_READY: Byte = 1
-		private const val NOTIFYING_DESTROY: Byte = 2
-		private const val NOTIFYING_PARENT: Byte = 3
-		private const val NOTIFYING_SEPARATE: Byte = 4
-		private const val NOTIFYING_ATTACH: Byte = 5
-		private const val NOTIFYING_DETACH: Byte = 6
+		private const val NOTIFYING_INIT: Byte = 1
+		private const val NOTIFYING_READY: Byte = 2
+		private const val NOTIFYING_DESTROY: Byte = 3
+		private const val NOTIFYING_PARENT: Byte = 4
+		private const val NOTIFYING_SEPARATE: Byte = 5
+		private const val NOTIFYING_ATTACH: Byte = 6
+		private const val NOTIFYING_DETACH: Byte = 7
 	}
 
 	private var notifying: Byte = NOTIFYING_NOTHING
@@ -31,6 +32,16 @@ abstract class Attribute {
 	internal fun link(node: Node) {
 		check(!linked) { "The attribute has already been linked" }
 		nodeInternal = node
+	}
+
+	internal fun notifyInit() {
+		notifying = NOTIFYING_INIT
+
+		onInit()
+		check(notified) { "${this::class.qualifiedName} did not call through to super.onInit()" }
+		notified = false
+
+		notifying = NOTIFYING_NOTHING
 	}
 
 	internal fun notifyReady() {
@@ -91,6 +102,16 @@ abstract class Attribute {
 		notified = false
 
 		notifying = NOTIFYING_NOTHING
+	}
+
+	protected open fun onInit() {
+		check(notifying == NOTIFYING_INIT) {
+			"onInit() can be only called by the engine"
+		}
+		check(!notified) {
+			"${this::class.qualifiedName} called through to super.onInit() multiple times"
+		}
+		notified = true
 	}
 
 	protected open fun onReady() {

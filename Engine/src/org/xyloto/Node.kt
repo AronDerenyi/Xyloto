@@ -3,6 +3,9 @@ package org.xyloto
 import org.xyloto.collections.ArrayWrapperList
 import org.xyloto.collections.HandledCollection
 import org.xyloto.collections.toImmutable
+import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
 import java.util.*
 import kotlin.NoSuchElementException
 
@@ -14,10 +17,12 @@ class Node(vararg attributes: Attribute) {
 	private var parentHandle: HandledCollection<Node>.Handle? = null
 	var parent: Node? = null
 		set(parent) {
+			checkInitialized()
 			checkDestroyed()
 			NodeTreeLock.check(NodeTreeLock.LOCK_PARENT)
 
 			if (parent == field) return
+			parent?.checkInitialized()
 			parent?.checkDestroyed()
 			check(parent != this) { "A node can't be it's own parent" }
 			check(this != Engine.root) { "The root can't have a parent" }
@@ -68,6 +73,8 @@ class Node(vararg attributes: Attribute) {
 			}
 		}
 
+	private var initialized = false
+
 	var destroyed = false
 		private set
 
@@ -77,7 +84,14 @@ class Node(vararg attributes: Attribute) {
 	init {
 		Engine.checkInitialized()
 		attributes.forEach { it.link(this) }
+		attributes.forEach { it.notifyInit() }
+		initialized = true
+
 		attributes.forEach { it.notifyReady() }
+	}
+
+	internal fun checkInitialized() {
+		check(initialized) { "The node hasn't been initialized" }
 	}
 
 	fun destroy() {

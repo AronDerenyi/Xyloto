@@ -21,6 +21,7 @@ object Engine {
 			NodeTreeLock.check(NodeTreeLock.LOCK_ROOT)
 
 			if (root == field) return
+			root?.checkInitialized()
 			root?.checkDestroyed()
 			check(root?.parent == null) { "The node already has a parent" }
 
