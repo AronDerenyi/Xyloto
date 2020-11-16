@@ -2,10 +2,13 @@
 
 package org.xyloto.window
 
+import org.lwjgl.PointerBuffer
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.NULL
+import org.lwjgl.util.nfd.NativeFileDialog
+import org.lwjgl.util.nfd.NativeFileDialog.*
 import org.xyloto.Engine
 import org.xyloto.System
 
@@ -296,6 +299,39 @@ object Window : System() {
 
 	fun setPosition(positionX: Int, positionY: Int) {
 		lastPositionEvent = PositionEvent(positionX, positionY)
+	}
+
+	fun showOpenFileDialog(
+		filter: List<String>? = null,
+		default: String? = null
+	) = showFileDialog(NativeFileDialog::NFD_OpenDialog, filter, default)
+
+	fun showSaveFileDialog(
+		filter: List<String>? = null,
+		default: String? = null
+	) = showFileDialog(NativeFileDialog::NFD_SaveDialog, filter, default)
+
+	private inline fun showFileDialog(
+		dialogFunction: (CharSequence?, CharSequence?, PointerBuffer) -> Int,
+		filter: List<String>?,
+		default: String?
+	): String? {
+		MemoryStack.stackPush().use { stack ->
+			val pathPointer = stack.pointers(1)
+			val result = dialogFunction(filter?.joinToString(";"), default, pathPointer)
+
+			if (result == NFD_OKAY) {
+				val path = pathPointer.getStringUTF8(0)
+				nNFD_Free(pathPointer[0])
+				return path
+			}
+
+			if (result == NFD_ERROR) {
+				java.lang.System.err.println("NFD Error: ${NFD_GetError()}")
+			}
+
+			return null
+		}
 	}
 
 	private data class SizeEvent(val width: Int, val height: Int)
