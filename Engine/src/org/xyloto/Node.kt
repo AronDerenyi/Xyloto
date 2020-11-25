@@ -1,7 +1,7 @@
 package org.xyloto
 
 import org.xyloto.collections.HandledCollection
-import org.xyloto.collections.toImmutable
+import org.xyloto.collections.asImmutable
 import java.util.*
 import kotlin.NoSuchElementException
 
@@ -75,7 +75,7 @@ class Node(vararg attributes: Attribute) {
 		private set
 
 	private val mutableChildren = HandledCollection<Node>()
-	val children: Collection<Node> = mutableChildren.toImmutable()
+	val children: Collection<Node> = mutableChildren.asImmutable()
 
 	init {
 		Engine.checkInitialized()

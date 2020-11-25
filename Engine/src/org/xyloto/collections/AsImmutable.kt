@@ -1,6 +1,6 @@
 package org.xyloto.collections
 
-fun <T> Iterator<T>.toImmutable(): Iterator<T> {
+fun <T> Iterator<T>.asImmutable(): Iterator<T> {
 	val mutableIterator = this
 	return object : Iterator<T> {
 		override fun hasNext() = mutableIterator.hasNext()
@@ -8,7 +8,7 @@ fun <T> Iterator<T>.toImmutable(): Iterator<T> {
 	}
 }
 
-fun <T> ListIterator<T>.toImmutable(): ListIterator<T> {
+fun <T> ListIterator<T>.asImmutable(): ListIterator<T> {
 	val mutableListIterator = this
 	return object : ListIterator<T> {
 		override fun hasNext() = mutableListIterator.hasNext()
@@ -20,7 +20,7 @@ fun <T> ListIterator<T>.toImmutable(): ListIterator<T> {
 	}
 }
 
-fun <E> Collection<E>.toImmutable(): Collection<E> {
+fun <E> Collection<E>.asImmutable(): Collection<E> {
 	val mutableCollection = this
 	return object : Collection<E> {
 
@@ -30,11 +30,11 @@ fun <E> Collection<E>.toImmutable(): Collection<E> {
 		override fun contains(element: E) = mutableCollection.contains(element)
 		override fun containsAll(elements: Collection<E>) = mutableCollection.containsAll(elements)
 
-		override fun iterator() = mutableCollection.iterator().toImmutable()
+		override fun iterator() = mutableCollection.iterator().asImmutable()
 	}
 }
 
-fun <E> List<E>.toImmutable(): List<E> {
+fun <E> List<E>.asImmutable(): List<E> {
 	val mutableList = this
 	return object : List<E> {
 
@@ -48,15 +48,15 @@ fun <E> List<E>.toImmutable(): List<E> {
 		override fun indexOf(element: E) = mutableList.indexOf(element)
 		override fun lastIndexOf(element: E) = mutableList.lastIndexOf(element)
 
-		override fun iterator() = mutableList.iterator().toImmutable()
-		override fun listIterator() = mutableList.listIterator().toImmutable()
-		override fun listIterator(index: Int) = mutableList.listIterator(index).toImmutable()
+		override fun iterator() = mutableList.iterator().asImmutable()
+		override fun listIterator() = mutableList.listIterator().asImmutable()
+		override fun listIterator(index: Int) = mutableList.listIterator(index).asImmutable()
 
-		override fun subList(fromIndex: Int, toIndex: Int) = mutableList.subList(fromIndex, toIndex).toImmutable()
+		override fun subList(fromIndex: Int, toIndex: Int) = mutableList.subList(fromIndex, toIndex).asImmutable()
 	}
 }
 
-fun <E> Set<E>.toImmutable(): Set<E> {
+fun <E> Set<E>.asImmutable(): Set<E> {
 	val mutableSet = this
 	return object : Set<E> {
 
@@ -66,11 +66,11 @@ fun <E> Set<E>.toImmutable(): Set<E> {
 		override fun contains(element: E) = mutableSet.contains(element)
 		override fun containsAll(elements: Collection<E>) = mutableSet.containsAll(elements)
 
-		override fun iterator() = mutableSet.iterator().toImmutable()
+		override fun iterator() = mutableSet.iterator().asImmutable()
 	}
 }
 
-fun <K, V> Map<K, V>.toImmutable(): Map<K, V> {
+fun <K, V> Map<K, V>.asImmutable(): Map<K, V> {
 	val mutableMap = this
 	return object : Map<K, V> {
 
@@ -118,7 +118,7 @@ fun <K, V> Map<K, V>.toImmutable(): Map<K, V> {
 			override fun contains(element: K) = mutableMap.keys.contains(element)
 			override fun containsAll(elements: Collection<K>) = mutableMap.keys.containsAll(elements)
 
-			override fun iterator() = mutableMap.keys.iterator().toImmutable()
+			override fun iterator() = mutableMap.keys.iterator().asImmutable()
 		}
 
 		override val values = object : Collection<V> {
@@ -129,7 +129,7 @@ fun <K, V> Map<K, V>.toImmutable(): Map<K, V> {
 			override fun contains(element: V) = mutableMap.values.contains(element)
 			override fun containsAll(elements: Collection<V>) = mutableMap.values.containsAll(elements)
 
-			override fun iterator() = mutableMap.values.iterator().toImmutable()
+			override fun iterator() = mutableMap.values.iterator().asImmutable()
 		}
 
 		override fun isEmpty() = mutableMap.isEmpty()

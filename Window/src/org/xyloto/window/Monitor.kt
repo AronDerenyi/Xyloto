@@ -5,7 +5,7 @@ package org.xyloto.window
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.NULL
-import org.xyloto.collections.toImmutable
+import org.xyloto.collections.asImmutable
 import java.util.*
 
 class Monitor(internal val handle: Long) {
@@ -13,7 +13,7 @@ class Monitor(internal val handle: Long) {
 	companion object {
 
 		private val mutableMonitors: MutableList<Monitor> = mutableListOf()
-		val monitors: List<Monitor> = mutableMonitors.toImmutable()
+		val monitors: List<Monitor> = mutableMonitors.asImmutable()
 		var monitorsChanged: Boolean = false; private set
 		var primaryMonitor: Monitor? = null; private set
 
