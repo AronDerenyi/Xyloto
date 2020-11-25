@@ -23,7 +23,7 @@ class ArrayWrapperList<T>(
 		if (index < 0 || index > size) throw IndexOutOfBoundsException(index.toString())
 		return object : ListIterator<T> {
 			private var i = index
-			override fun hasNext() = i + 1 < size
+			override fun hasNext() = i < size
 			override fun hasPrevious() = i - 1 >= 0
 			override fun next() = get(i++)
 			override fun nextIndex() = i
