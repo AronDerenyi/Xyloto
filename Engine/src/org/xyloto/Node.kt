@@ -117,7 +117,7 @@ class Node(vararg attributes: Attribute) {
 	}
 
 	@JvmName("getAttributeInlined")
-	inline fun <reified T : Attribute> getAttribute(): T? {
+	inline fun <reified T> getAttribute(): T? {
 		for (attribute in attributes) {
 			if (attribute is T) return attribute
 		}
@@ -126,12 +126,12 @@ class Node(vararg attributes: Attribute) {
 	}
 
 	@JvmName("requireAttributeInlined")
-	inline fun <reified T : Attribute> requireAttribute(): T {
+	inline fun <reified T> requireAttribute(): T {
 		return getAttribute() ?: throw NoSuchElementException("${T::class.qualifiedName} is missing")
 	}
 
 	@JvmName("getAttributesInlined")
-	inline fun <reified T : Attribute> getAttributes(): List<T> {
+	inline fun <reified T> getAttributes(): List<T> {
 		val attributes: MutableList<T> = LinkedList()
 
 		for (attribute in this.attributes) {
@@ -141,15 +141,27 @@ class Node(vararg attributes: Attribute) {
 		return attributes
 	}
 
-	fun <T : Attribute> getAttribute(type: Class<T>): T? {
-		return getAttribute(type)
+	fun <T> getAttribute(type: Class<T>): T? {
+		for (attribute in attributes) {
+			@Suppress("UNCHECKED_CAST")
+			if (type.isInstance(attribute)) return attribute as T
+		}
+
+		return null
 	}
 
-	fun <T : Attribute> requireAttribute(type: Class<T>): T {
-		return requireAttribute(type)
+	fun <T> requireAttribute(type: Class<T>): T {
+		return getAttribute(type) ?: throw NoSuchElementException("${type.name} is missing")
 	}
 
-	fun <T : Attribute> getAttributes(type: Class<T>): List<T> {
-		return getAttributes(type)
+	fun <T> getAttributes(type: Class<T>): List<T> {
+		val attributes: MutableList<T> = LinkedList()
+
+		for (attribute in this.attributes) {
+			@Suppress("UNCHECKED_CAST")
+			if (type.isInstance(attribute)) attributes.add(attribute as T)
+		}
+
+		return attributes
 	}
 }

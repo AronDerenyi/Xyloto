@@ -67,7 +67,7 @@ object Engine {
 
 	@JvmStatic
 	@JvmName("getSystemInlined")
-	inline fun <reified T : System> getSystem(): T? {
+	inline fun <reified T> getSystem(): T? {
 		for (system in systems) {
 			if (system is T) return system
 		}
@@ -77,17 +77,22 @@ object Engine {
 
 	@JvmStatic
 	@JvmName("requireSystemInlined")
-	inline fun <reified T : System> requireSystem(): T {
+	inline fun <reified T> requireSystem(): T {
 		return getSystem() ?: throw NoSuchElementException("${T::class.qualifiedName} is missing")
 	}
 
 	@JvmStatic
-	fun <T : Attribute> getSystem(type: Class<T>): T? {
-		return getSystem(type)
+	fun <T> getSystem(type: Class<T>): T? {
+		for (system in systems) {
+			@Suppress("UNCHECKED_CAST")
+			if (type.isInstance(system)) return system as T
+		}
+
+		return null
 	}
 
 	@JvmStatic
-	fun <T : Attribute> requireSystem(type: Class<T>): T {
-		return requireSystem(type)
+	fun <T> requireSystem(type: Class<T>): T {
+		return getSystem(type) ?: throw NoSuchElementException("${type.name} is missing")
 	}
 }
