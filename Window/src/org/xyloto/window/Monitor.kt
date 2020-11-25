@@ -5,7 +5,6 @@ package org.xyloto.window
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.NULL
-import org.xyloto.collections.ArrayWrapperList
 import org.xyloto.collections.toImmutable
 import java.util.*
 
@@ -109,17 +108,15 @@ class Monitor(internal val handle: Long) {
 		}
 
 		val videoModes = glfwGetVideoModes(handle)
-		modes = ArrayWrapperList(
-			Array(videoModes?.limit() ?: 0) {
-				val videoMode = videoModes!![it]
-				Mode(
-					this,
-					videoMode.width(),
-					videoMode.height(),
-					videoMode.redBits()
-				)
-			}
-		)
+		modes = Array(videoModes?.limit() ?: 0) {
+			val videoMode = videoModes!![it]
+			Mode(
+				this,
+				videoMode.width(),
+				videoMode.height(),
+				videoMode.redBits()
+			)
+		}.asList()
 	}
 
 	data class Mode(

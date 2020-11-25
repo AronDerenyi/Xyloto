@@ -1,18 +1,14 @@
 package org.xyloto
 
-import org.xyloto.collections.ArrayWrapperList
 import org.xyloto.collections.HandledCollection
 import org.xyloto.collections.toImmutable
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
 import java.util.*
 import kotlin.NoSuchElementException
 
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 class Node(vararg attributes: Attribute) {
 
-	val attributes: List<Attribute> = ArrayWrapperList(attributes.clone())
+	val attributes: List<Attribute> = attributes.clone().asList()
 
 	private var parentHandle: HandledCollection<Node>.Handle? = null
 	var parent: Node? = null

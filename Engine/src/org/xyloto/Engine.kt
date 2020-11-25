@@ -1,7 +1,5 @@
 package org.xyloto
 
-import org.xyloto.collections.ArrayWrapperList
-
 @Suppress("unused", "MemberVisibilityCanBePrivate")
 object Engine {
 
@@ -37,7 +35,7 @@ object Engine {
 	@JvmStatic
 	fun init(vararg systems: System) {
 		check(!initialized) { "The engine has already been initialized" }
-		systemsInternal = ArrayWrapperList(systems.clone())
+		systemsInternal = systems.clone().asList()
 		initialized = true
 	}
 
